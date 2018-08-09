@@ -6,7 +6,7 @@
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card h-100" style=" text-align: center; padding-top:10px;">
                         <a href="#"><img class="" src="{{ Voyager::image($product->image) }}" alt=""
-                                         style="max-height:200px; max-width:360px;" id="image-src"></a>
+                                         style="max-height:200px; max-width:360px;" id="product-image"></a>
                         <div class="card-body">
                             <h4 class="card-title">
                                 <a href="#" id="product-name" value="{{ $product->name }}">{!! $product->name !!}</a>

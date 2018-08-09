@@ -1,75 +1,47 @@
 @extends('layouts.master')
 @section('content')
 
-    @php
-        $lp = 0;
-    @endphp
-    <form>
-        @csrf
-        <table style="color: white; border: white">
+    <div class="container">
+        <table id="cart" class="table table-hover table-condensed table-light">
             <thead>
             <tr>
-                <th>Lp.</th>
-                <th>Nazwa</th>
-                {{--<th>Zdjęcie</th>--}}
-                <th>Ilość</th>
-                <th>Cena</th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th style="width:8%">No.</th>
+                <th style="width:50%">Product</th>
+                <th style="width:8%">Quantity</th>
+                <th style="width:10%">Price</th>
+                <th style="width:22%"></th>
             </tr>
             </thead>
-            {{--@if(isset($products))--}}
-            {{--@foreach($products as $product)--}}
-            {{-- Koszyk wykorzystujacy sesje --}}
-            {{--<tr>--}}
-            {{--<td>{{ $lp++ }}</td>--}}
-            {{--<td>{{ $product["item"]->name }}</td>--}}
-            {{--<td><img src=""></td>--}}
-            {{--<td>{{ $product["qty"] }}</td>--}}
-            {{--<td>{{ $product["price"] }}</td>--}}
-            {{--</tr>--}}
-
-            {{-- Koszyk z wykorzystaniem ciasteczek wypisujacy w php--}}
-            {{--<tr>--}}
-            {{--<td>{{ $lp++ }}</td>--}}
-            {{--<td>{{ $product["item"]["name"] }}</td>--}}
-            {{--<td><img src=""></td>--}}
-            {{--<td>--}}
-            {{--<input type="number" name="{{ $product['item']['id'] }}"--}}
-            {{--min="1" max="999" step="1"--}}
-                   {{--value="{{ $product["qty"] }}" style="color: black;"></td>--}}
-            {{--<td>{{ $product["price"] }}</td>--}}
-            {{--</tr>--}}
-
-            {{-- Koszyk z wykorzystaniem ciasteczek wypisujacy w knockout.js--}}
-            <tbody class="" data-bind="foreach: products()">
-                @php
-                    $lp++;
-                @endphp
-                <tr>
-                    <td>{{ $lp }}</td>
-                    <td data-bind="text: name"></td>
-                    {{--<td><img data-bind="attr: { src: image }"></td>--}}
-                    <td>
-                        {{--<input style="color: black;" data-bind="text: name">--}}
-                        <input type="number" min="1" max="999" style="color: black;" data-bind="value: qty, inputText: qty">
-                    </td>
-                    <td data-bind="text: price"></td>
-                    <td>
-                        <input type="button" data-bind="click: increaseQty()" value="+" style="color: black;">
-                    </td>
-                    <td>
-                        <input type="button" data-bind="click: decreaseQty()" value="-" style="color: black;">
-                    </td>
-                    <td>
-                        <input type="button" data-bind="" value="X" style="color: black;">
-                    </td>
-                </tr>
+            <tbody data-bind="foreach: products()">
+            <tr>
+                <td data-bind="text: ($index() + 1)"></td>
+                <td data-th="Product">
+                    <div class="row">
+                        <div class="col-sm-2 hidden-xs"><img data-bind="attr: { src: image }" alt="..." class="img-responsive"/></div>
+                        <div class="col-sm-10">
+                            <h4 class="nomargin" data-bind="text: name"></h4>
+                        </div>
+                    </div>
+                </td>
+                <td data-th="Quantity">
+                    <input type="number" min="1" max="999" class="form-control text-center" data-bind="value: qty, inputText: qty">
+                </td>
+                <td data-th="Subtotal" class="text-center" data-bind="text: price"></td>
+                <td class="actions" data-th="">
+                    <button class="btn btn-info btn-sm" data-bind="click: increaseQty()"><i>+</i></button>
+                    <button class="btn btn-warning btn-sm" data-bind="click: decreaseQty()"><i>-</i></button>
+                    <button class="btn btn-danger btn-sm" data-bind="click: $parent.removeFromCart"><i>x</i></button>
+                </td>
+            </tr>
             </tbody>
-
-            {{--@endforeach--}}
-            {{--@endif--}}
+            <tfoot>
+            <tr>
+                <td><a href="/products" class="btn btn-warning"><i class="fa fa-angle-left"></i> Continue Shopping</a></td>
+                <td colspan="2" class="hidden-xs"></td>
+                <td class="hidden-xs text-center">Total price: <strong data-bind="text: subtotal()"></strong> PLN</td>
+                <td><a href="#" class="btn btn-success btn-block">Order <i class="fa fa-angle-right"></i></a></td>
+            </tr>
+            </tfoot>
         </table>
-    </form>
+    </div>
 @endsection

@@ -44,4 +44,4 @@ Route::get('/addToCart/{id}','ProductController@addToCart');
 
 Route::get('cart', 'CartController@show');
 
-Route::get('/showProduct/{id}', 'ProductController@showProduct');
+Route::get('/showProduct/{product}', 'ProductController@showProduct');

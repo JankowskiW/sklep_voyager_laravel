@@ -21,9 +21,13 @@ class ProductController extends Controller
         return view('products', compact('products'));
     }
 
-    function showProduct(Request $request, $id)
+//    function showProduct(Request $request, $id)
+//    {
+//        $product = Product::where('id', $id)->get()[0];
+//        return view('product-page', compact('product'));
+//    }
+    function showProduct(Product $product)
     {
-        $product = Product::where('id', $id)->get()[0];
         return view('product-page', compact('product'));
     }
 

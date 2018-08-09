@@ -175,12 +175,14 @@
         document.cookie = name + '=; Max-Age=-99999999;';
     }
 
-    var Product = function (name, price, quantity = 1) {
+    var Product = function (name, price, quantity = 1, image, sku) {
+        this.sku = ko.observable(sku);
+        this.image = ko.observable(image);
         this.name = ko.observable(name);
         this.qty = ko.observable(quantity);
         this.price = ko.observable(price);
         if(this.qty() < 1) this.qty(1);
-        console.log(this.qty());
+        // console.log(this.qty());
 
         this.setQt = function (n) {
             this.qty(n);
@@ -188,14 +190,14 @@
 
         this.increaseQty = function () {
             this.qty(this.qty() - (-1));
-            console.log(this.qty());
+            // console.log(this.qty());
         };
 
         this.decreaseQty = function () {
             if (this.qty() > 1) {
                 this.qty(this.qty() - 1);
             }
-            console.log(this.qty());
+            // console.log(this.qty());
         };
 
         this.getCount = ko.computed(function () {
@@ -213,12 +215,12 @@
         var self = this;
         self.test = ko.observable(5);
         self.products = ko.observableArray(products);
+
         self.addProduct = function (product) {
             self.products().push(product);
         };
 
         self.removeFromCart = function () {
-            console.log('removing from cart');
             self.products.remove(this);
             self.products.valueHasMutated();
         };
@@ -253,22 +255,44 @@
 
 
         self.addNewProduct = function () {
+            var image = $( "#product-image" ).attr('src');
             var price = $( "#product-price" ).attr('value');
             var qty = $("#product-qty").attr('value');
             var name = $( "#product-name" ).attr('value');
-            console.log(price);
-            self.addNewProductToList(name, parseFloat(price), parseInt(qty));
+            var sku = $( "#product-sku" ).attr('value');
+            var flag = false;
+            console.log(image);
+            console.log($("#product-qty").attr('value'));
+            for(var product in self.products())
+            {
+                console.log(self.products()[product].sku());
+
+                if(self.products()[product].sku() === sku)
+                {
+                    self.products()[product].increaseQty();
+                    flag = true;
+                }
+            }
+            if (! flag){
+                self.addNewProductToList(name, parseFloat(price), parseInt(qty), image, sku);
+            }
         };
 
-        self.addNewProductToList = function (name, price, qty) {
-            self.products().push(new Product(name, price, qty));
+        self.addNewProductToList = function (name, price, qty, image, sku) {
+            self.products().push(new Product(name, price, qty, image, sku));
             self.products.valueHasMutated();
         };
 
         self.updateCookies = ko.computed(function () {
             var tmpArray = [];
             for (var i in this.products()) {
-                tmpArray.push([this.products()[i].name(), this.products()[i].price(), this.products()[i].qty()]);
+                tmpArray.push([
+                    this.products()[i].name(),
+                    this.products()[i].price(),
+                    this.products()[i].qty(),
+                    this.products()[i].image(),
+                    this.products()[i].sku()
+                ]);           /// OBRAZ I SKU
             }
             setCookie('cart', JSON.stringify(tmpArray), 8400);
         }, self);
@@ -283,172 +307,19 @@
     if (productList) {
         var parsedProductList = JSON.parse(productList);
         for (var i in parsedProductList) {
-            products.push(new Product(parsedProductList[i][0], parsedProductList[i][1], parsedProductList[i][2]));
+            products.push(new Product(
+                parsedProductList[i][0],
+                parsedProductList[i][1],
+                parsedProductList[i][2],
+                parsedProductList[i][3],
+                parsedProductList[i][4]
+            ));          /// OBRAZ i SKU
         }
     }
-    console.log(products);
+    // console.log(products);
     var cart = new Cart(products);
 
     ko.applyBindings(cart);
-    // ko.options.useOnlyNativeEvents = true;
-
-    // var Product = function (name, price, quantity = 1) {
-    //     this.name = ko.observable(name);
-    //     this.qty = ko.observable(quantity);
-    //     this.price = ko.observable(price);
-    //
-    //     // this.increaseQty = function () {
-    //     //     this.qty(this.qty() - (-1)); // lub this.qty(parseInt(this.qty() + 1));
-    //     //     console.log(this.qty());
-    //     // }
-    //     //
-    //     // this.decreaseQty = function () {
-    //     //     if (this.qty() > 1) {
-    //     //         this.qty(this.qty() - 1);
-    //     //     }
-    //     //     console.log(this.qty());
-    //     // }
-    //
-    //     this.getCount = ko.computed(function () {
-    //         return this.qty();
-    //     }, this);
-    //
-    //     this.getFullPrice = ko.compute(function () {
-    //         return this.price() * this.getCount();
-    //     }, this);
-    //
-    // }
-    //
-    // var Cart = function (products) {
-    //     var self = this;
-    //     self.products = ko.observableArray(products);
-    //
-    //     self.addProduct = function (product) {
-    //         self.products().push(product);
-    //     };
-    //
-    //     self.removeFromCart = function () {
-    //         self.products.remove(this);
-    //         self.products.valueHasMutated();
-    //     };
-    //
-    //     self.subtotal = ko.computed(function () {
-    //         var i = 0;
-    //         var retval = 0.0;
-    //         if (self.products().length < 1) {
-    //             return retval;
-    //         }
-    //         for (; i < self.products().length < 1) {
-    //             return retval;
-    //         }
-    //         for (; i < self.products().length; i++) {
-    //             retval += self.products()[i].getFullPrice();
-    //         }
-    //         self.products.valueHasMutated();
-    //         return retval;
-    //     }, self);
-    //
-    //     self.getProductCount = ko.computed(function () {
-    //         var sum = 0;
-    //
-    //         if (self.products().length < 1) {
-    //             return sum;
-    //         }
-    //
-    //         for (var i in self.prpoducts()) {
-    //             sum += self.products()[i].getCount();
-    //         }
-    //         self.products.valueHasMutated();
-    //         return sum;
-    //     }, self);
-    //
-    //     self.newProductPrice = ko.observable(null);
-    //     self.newProductQt = ko.observable(null);
-    //     self.newProductName = ko.observable(null);
-    //
-    //     self.addNewProduct = function () {
-    //         self.addNewProductToList(self.newProductName(), parseFloat(self.newProductPrice()), pastseInt(self.newProductQt()));
-    //         self.newProductPrice(null);
-    //         self.newProductName(null);
-    //         self.newProductQt(null);
-    //     };
-    //
-    //     self.addNewProductToList = function (name, price, qty) {
-    //         self.products().push(new Product(name, price, qty));
-    //         self.products.valueHasMutated();
-    //     };
-    //
-    //     self.updateCookies = ko.computed(function () {
-    //         var tmpArray = [];
-    //         for (var i in this.products()) {
-    //             tmpArray.push([this.products()[i].name(), this.products()[i].price(), this.products()[i].qty()]);
-    //
-    //         }
-    //         setCookie('cart', JSON.stringify(tmpArray));
-    //
-    //     }, self);
-    //
-    //     self.isReadyToAdd = ko.computed(function () {
-    //         return self.newProductQt() !== null && self.newProductName() != null && self.newProductPrice() !== null;
-    //     }, self);
-    // };
-    //
-    // var products = [];
-    // var productList = getCookie('cart');
-    // if(productList) {
-    //     var parsedProductList = JSON.parse(productList);
-    //     for (var i in parsedProductList) {
-    //         products.push(new Product(parsedProductList[i][0], parsedProductList[i][1], parsedProductList[i][2]));
-    //     }
-    // }
-    // products = ko.observableArray(products);
-    // var cart = new Cart(products);
-    // ko.applyBindings(cart);
-    //
-    // //
-    // // var products = [];
-    // // var productList = JSON.parse(getCookie('cart'))["items"];
-    // // if (productList) {
-    // //     for (var i in productList) {
-    // //         // console.log(productList[i]);
-    // //         products.push(new Product(
-    // //             productList[i]["item"]["name"],
-    // //             productList[i]["price"],
-    // //             productList[i]["qty"]
-    // //         ))
-    // //     }
-    // // }
-    // // products = ko.observableArray(products);
-    // // ko.applyBindings(products());
-    // // ko.options.useOnlyNativeEvents = true;
-    // // setCookie('cart',)
-    //
-    // //
-    // // var Item = function (lp, name, image, qty, price) {
-    // //     this.lp = lp;
-    // //     this.name = name;
-    // //     this.image = image;
-    // //     this.qty = qty;
-    // //     this.price = price;
-    // // };
-    // //
-    // // var Items = ko.observableArray([]);
-    // // var key;
-    // // var idx = 0;
-    // // for (key in cart) {
-    // //     idx++;
-    // //     item = new Item(
-    // //         idx,
-    // //         cart[key]["item"]["name"],
-    // //         cart[key]["item"]["image"],
-    // //         cart[key]["qty"],
-    // //         cart[key]["price"]
-    // //     )
-    // //     Items.push(item);
-    // // }
-    // // ko.applyBindings(new function () {
-    // //     this.Items = Items;
-    // // }());
 
 </script>
 
