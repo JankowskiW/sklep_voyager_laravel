@@ -181,7 +181,11 @@
         this.name = ko.observable(name);
         this.qty = ko.observable(quantity);
         this.price = ko.observable(price);
-        if(this.qty() < 1) this.qty(1);
+
+        this.inputValidate = function() {
+            this.qty(1);
+            return this.qty;
+        }
         // console.log(this.qty());
 
         this.setQt = function (n) {
@@ -320,6 +324,17 @@
     var cart = new Cart(products);
 
     ko.applyBindings(cart);
+
+    ko.bindingHandlers.validate = {
+        update: function() {
+            console.log("validate");
+            if ($(element).value() < 1)
+            {
+                console.log("val < 1");
+                $(element).value(1);
+            }
+        }
+    };
 
 </script>
 

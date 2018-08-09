@@ -24,7 +24,7 @@
                     </div>
                 </td>
                 <td data-th="Quantity">
-                    <input type="number" min="1" max="999" class="form-control text-center" data-bind="value: qty, inputText: qty">
+                    <input type="number" min="1" class="form-control text-center" data-bind="value: qty() > 0 ? qty : inputValidate(), valueUpdate: qty">
                 </td>
                 <td data-th="Subtotal" class="text-center" data-bind="text: price"></td>
                 <td class="actions" data-th="">
