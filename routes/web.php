@@ -28,7 +28,7 @@ Route::get('logout', function () {
     if (Auth::user()) {
         Auth::logout();
     }
-    return view('home');
+    return view('welcome');
 });
 
 Auth::routes();
